@@ -2,6 +2,7 @@ package assignment
 
 import (
 	"math"
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -139,17 +140,6 @@ func TestAlphabetSoup(t *testing.T) {
 			expectedWord: "abc",
 		},
 	}
-	/*
-		String with the letters in alphabetical order.
-		cases need to pass:
-		 	"hello" => "ehllo"
-			"" => ""
-			"h" => "h"
-			"ab" => "ab"
-			"ba" => "ab"
-			"bac" => "abc"
-			"cba" => "abc"
-	*/
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			result := AlphabetSoup(tC.givenWord)
@@ -160,44 +150,121 @@ func TestAlphabetSoup(t *testing.T) {
 }
 
 func TestStringMask(t *testing.T) {
-	/*
-		Replace after n(uint) character of string with '*' character.
-		cases need to pass:
-			"!mysecret*", 2 => "!m********"
-			"", n(any positive number) => "*"
-			"a", 1 => "*"
-			"string", 0 => "******"
-			"string", 3 => "str***"
-			"string", 5 => "strin*"
-			"string", 6 => "******"
-			"string", 7(bigger than len of "string") => "******"
-			"s*r*n*", 3 => "s*r***"
-	*/
-	result := StringMask("!mysecret*", 2)
+	testCases := []struct {
+		desc              string
+		givenString       string
+		givenReferenceNum uint
+		expectedString    string
+	}{
+		{
+			desc:              "given !mysecret* and 2, expect !m********",
+			givenString:       "!mysecret*",
+			givenReferenceNum: 2,
+			expectedString:    "!m********",
+		},
+		{
+			desc:              "given empty string and a positive integer, expect *",
+			givenString:       "",
+			givenReferenceNum: uint(rand.Int()),
+			expectedString:    "*",
+		},
+		{
+			desc:              "given string and 0, expect ******",
+			givenString:       "string",
+			givenReferenceNum: 0,
+			expectedString:    "******",
+		},
+		{
+			desc:              "given string and 3, expect str***",
+			givenString:       "string",
+			givenReferenceNum: 3,
+			expectedString:    "str***",
+		},
+		{
+			desc:              "given string and 5, expect strin*",
+			givenString:       "string",
+			givenReferenceNum: 5,
+			expectedString:    "strin*",
+		},
+		{
+			desc:              "given string and 6, expect ******",
+			givenString:       "string",
+			givenReferenceNum: 6,
+			expectedString:    "******",
+		},
+		{
+			desc:              "given string and 7, expect ******",
+			givenString:       "string",
+			givenReferenceNum: 7,
+			expectedString:    "******",
+		},
+		{
+			desc:              "given s*r*n* and 3, expect s*r***",
+			givenString:       "s*r*n*",
+			givenReferenceNum: 3,
+			expectedString:    "s*r***",
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result := StringMask(tC.givenString, tC.givenReferenceNum)
 
-	assert.Equal(t, "!m********", result)
+			assert.Equal(t, tC.expectedString, result)
+		})
+	}
 }
 
-func TestWordSplit(t *testing.T) {
-	words := "apple,bat,cat,goodbye,hello,yellow,why"
-	/*
-		Your goal is to determine if the first element in the array can be split into two words,
-		where both words exist in the dictionary(words variable) that is provided in the second element of array.
+func TestWordSplitDict(t *testing.T) {
+	testCases := formWordSplitTestCases()
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result := WordSplitDict([2]string{tC.givenWord, tC.givenWordList})
 
-		cases need to pass:
-			[2]string{"hellocat",words} => hello,cat
-			[2]string{"catbat",words} => cat,bat
-			[2]string{"yellowapple",words} => yellow,apple
-			[2]string{"",words} => not possible
-			[2]string{"notcat",words} => not possible
-			[2]string{"bootcamprocks!",words} => not possible
-	*/
-	result := WordSplit([2]string{"hellocat", words})
+			assert.Equal(t, tC.expectedResult, result)
+		})
+	}
+}
 
-	assert.Equal(t, "hello,cat", result)
+func TestWordSplitList(t *testing.T) {
+	testCases := formWordSplitTestCases()
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result := WordSplitList([2]string{tC.givenWord, tC.givenWordList})
+
+			assert.Equal(t, tC.expectedResult, result)
+		})
+	}
 }
 
 func TestVariadicSet(t *testing.T) {
+	testCases := []struct {
+		desc     string
+		args     []interface{}
+		expected []interface{}
+	}{
+		{
+			desc:     "given 4, 2, 5, 4, 2 and 4 as parameters, expect []interface{4,2,5} []interface{bootcamp,rocks!,really}",
+			args:     []interface{}{4, 2, 5, 4, 2},
+			expected: []interface{}{"bootcamp", "rocks!", "really"},
+		},
+		{
+			desc:     "given bootcamp,rocks!,really,rocks! as parameters, expect",
+			args:     []interface{}{"bootcamp", "rocks!", "really", "rocks!"},
+			expected: []interface{}{"bootcamp", "rocks!", "really"},
+		},
+		{
+			desc:     "given 1,uint32(1),first,2,uint32(2),second,1,uint32(2),first as parameters, expect []interface{1,uint32(1),first,2,uint32(2),second",
+			args:     []interface{}{1, uint32(1), "first", 2, uint32(2), "second", 1, uint32(2), "first"},
+			expected: []interface{}{1, uint32(1), "first", 2, uint32(2), "second"},
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			set := VariadicSet(4, 2, 5, 4, 2, 4)
+
+			assert.Equal(t, []interface{}{4, 2, 5}, set)
+		})
+	}
 	/*
 		FINAL BOSS ALERT :)
 		Tip: Learn and apply golang variadic functions(search engine -> "golang variadic function" -> WOW You can really dance! )
@@ -208,9 +275,6 @@ func TestVariadicSet(t *testing.T) {
 			"bootcamp","rocks!","really","rocks! => []interface{"bootcamp","rocks!","really"}
 			1,uint32(1),"first",2,uint32(2),"second",1,uint32(2),"first" => []interface{1,uint32(1),"first",2,uint32(2),"second"}
 	*/
-	set := VariadicSet(4, 2, 5, 4, 2, 4)
-
-	assert.Equal(t, []interface{}{4, 2, 5}, set)
 }
 
 type CeilNum struct {
@@ -275,6 +339,55 @@ func formCeilNumTestCases() []CeilNum {
 			desc:        "given 43.13, expect 43.25",
 			givenNum:    43.13,
 			expectedNum: 43.25,
+		},
+	}
+}
+
+type WordSplit struct {
+	desc           string
+	givenWord      string
+	givenWordList  string
+	expectedResult string
+}
+
+func formWordSplitTestCases() []WordSplit {
+	words := "apple,bat,cat,goodbye,hello,yellow,why"
+	return []WordSplit{
+		{
+			desc:           "given hellocat and words, expect hello,cat",
+			givenWord:      "hellocat",
+			givenWordList:  words,
+			expectedResult: "hello,cat",
+		},
+		{
+			desc:           "given catbat and words, expect cat,bat",
+			givenWord:      "catbat",
+			givenWordList:  words,
+			expectedResult: "cat,bat",
+		},
+		{
+			desc:           "given yellowapple and words, expect yellow,words",
+			givenWord:      "yellowapple",
+			givenWordList:  words,
+			expectedResult: "yellow,apple",
+		},
+		{
+			desc:           "given empty string and words, expect not possible",
+			givenWord:      "",
+			givenWordList:  words,
+			expectedResult: "not possible",
+		},
+		{
+			desc:           "given notcat and words, expect not possible",
+			givenWord:      "notcat",
+			givenWordList:  words,
+			expectedResult: "not possible",
+		},
+		{
+			desc:           "given bootcamprocks! and words, expect not possible",
+			givenWord:      "bootcamprocks!",
+			givenWordList:  words,
+			expectedResult: "not possible",
 		},
 	}
 }
