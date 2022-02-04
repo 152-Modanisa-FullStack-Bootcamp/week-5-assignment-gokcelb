@@ -98,51 +98,33 @@ func TestCeilNumberNoStringConversion(t *testing.T) {
 	}
 }
 
-func TestAlphabetSoup(t *testing.T) {
-	testCases := []struct {
-		desc         string
-		givenWord    string
-		expectedWord string
-	}{
-		{
-			desc:         "given hello, expect ehllo",
-			givenWord:    "hello",
-			expectedWord: "ehllo",
-		},
-		{
-			desc:         "given empty string, expect empty string",
-			givenWord:    "",
-			expectedWord: "",
-		},
-		{
-			desc:         "given h, expect h",
-			givenWord:    "h",
-			expectedWord: "h",
-		},
-		{
-			desc:         "given ab, expect ab",
-			givenWord:    "ab",
-			expectedWord: "ab",
-		},
-		{
-			desc:         "given ba, expect ab",
-			givenWord:    "ba",
-			expectedWord: "ab",
-		},
-		{
-			desc:         "given bac, expect abc",
-			givenWord:    "bac",
-			expectedWord: "abc",
-		},
-		{
-			desc:         "given cba, expect abc",
-			givenWord:    "cba",
-			expectedWord: "abc",
-		},
-	}
+func TestAlphabetSoupCountingSortLimited(t *testing.T) {
+	testCases := formAlphabetSoupTestCases()
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			result := AlphabetSoup(tC.givenWord)
+			result := AlphabetSoupCountingSortLimited(tC.givenWord)
+
+			assert.Equal(t, tC.expectedWord, result)
+		})
+	}
+}
+
+func TestAlphabetSoupCoutingSortLimitless(t *testing.T) {
+	testCases := formAlphabetSoupTestCases()
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result := AlphabetSoupCountingSortLimitless(tC.givenWord)
+
+			assert.Equal(t, tC.expectedWord, result)
+		})
+	}
+}
+
+func TestAlphabetSoupBubbleSort(t *testing.T) {
+	testCases := formAlphabetSoupTestCases()
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result := AlphabetSoupBubbleSort(tC.givenWord)
 
 			assert.Equal(t, tC.expectedWord, result)
 		})
@@ -265,16 +247,6 @@ func TestVariadicSet(t *testing.T) {
 			assert.Equal(t, []interface{}{4, 2, 5}, set)
 		})
 	}
-	/*
-		FINAL BOSS ALERT :)
-		Tip: Learn and apply golang variadic functions(search engine -> "golang variadic function" -> WOW You can really dance! )
-
-		Convert inputs to set(no duplicate element)
-		cases need to pass:
-			4,2,5,4,2,4 => []interface{4,2,5}
-			"bootcamp","rocks!","really","rocks! => []interface{"bootcamp","rocks!","really"}
-			1,uint32(1),"first",2,uint32(2),"second",1,uint32(2),"first" => []interface{1,uint32(1),"first",2,uint32(2),"second"}
-	*/
 }
 
 type CeilNum struct {
@@ -339,6 +311,57 @@ func formCeilNumTestCases() []CeilNum {
 			desc:        "given 43.13, expect 43.25",
 			givenNum:    43.13,
 			expectedNum: 43.25,
+		},
+	}
+}
+
+type AlphabetSoup struct {
+	desc         string
+	givenWord    string
+	expectedWord string
+}
+
+func formAlphabetSoupTestCases() []AlphabetSoup {
+	return []AlphabetSoup{
+		{
+			desc:         "given hello, expect ehllo",
+			givenWord:    "hello",
+			expectedWord: "ehllo",
+		},
+		{
+			desc:         "given empty string, expect empty string",
+			givenWord:    "",
+			expectedWord: "",
+		},
+		{
+			desc:         "given h, expect h",
+			givenWord:    "h",
+			expectedWord: "h",
+		},
+		{
+			desc:         "given ab, expect ab",
+			givenWord:    "ab",
+			expectedWord: "ab",
+		},
+		{
+			desc:         "given ba, expect ab",
+			givenWord:    "ba",
+			expectedWord: "ab",
+		},
+		{
+			desc:         "given bac, expect abc",
+			givenWord:    "bac",
+			expectedWord: "abc",
+		},
+		{
+			desc:         "given cba, expect abc",
+			givenWord:    "cba",
+			expectedWord: "abc",
+		},
+		{
+			desc:         "given cbafda, expect aabcdf",
+			givenWord:    "cbafda",
+			expectedWord: "aabcdf",
 		},
 	}
 }

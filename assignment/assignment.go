@@ -59,13 +59,13 @@ func CeilNumberNoStringConversion(f float64) float64 {
 	}
 }
 
-func AlphabetSoup(s string) string {
+func AlphabetSoupCountingSortLimited(s string) string {
 	// intiialize zero valued fix-length array based on the constraint
 	// that parameter s will consist of smallcase latin letters
 	var byteList [26]byte
 	// assuming smallcase a will be the smallest
 	smallest := byte(97)
-	// put "a" in the 0th index to form an already sorted array
+	// put "a" in the 0th index and form an already sorted array
 	// store how many times the letter shows up as value
 	for i := 0; i < len(s); i++ {
 		byteList[s[i]-smallest] += 1
@@ -83,6 +83,41 @@ func AlphabetSoup(s string) string {
 		}
 	}
 	return string(newWord)
+}
+
+func AlphabetSoupCountingSortLimitless(s string) string {
+	// initialize a 128 bit long array to cover the whole ascii table
+	var byteList [128]byte
+	// fill byteList's indexes
+	for i := 0; i < len(s); i++ {
+		byteList[s[i]] += 1
+	}
+
+	var newWord []byte
+	for i := 0; i < len(byteList); i++ {
+		quantity := int(byteList[i])
+		if quantity == 0 {
+			continue
+		}
+		for k := 0; k < quantity; k++ {
+			newWord = append(newWord, byte(i))
+		}
+	}
+	return string(newWord)
+}
+
+func AlphabetSoupBubbleSort(s string) string {
+	letters := strings.Split(s, "")
+	for i := 0; i < len(letters)-1; i++ {
+		for j := 0; j < len(letters)-1; j++ {
+			if letters[j] > letters[j+1] {
+				temp := letters[j]
+				letters[j] = letters[j+1]
+				letters[j+1] = temp
+			}
+		}
+	}
+	return strings.Join(letters, "")
 }
 
 func StringMask(s string, n uint) string {
@@ -162,9 +197,8 @@ func VariadicSet(args ...interface{}) []interface{} {
 		// if value is already in set, ignore and continue looping
 		if icontains(arg, set) {
 			continue
-		} else {
-			set = append(set, arg)
 		}
+		set = append(set, arg)
 	}
 	return set
 }
