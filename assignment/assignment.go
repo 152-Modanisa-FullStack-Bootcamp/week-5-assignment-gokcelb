@@ -143,6 +143,16 @@ func StringMask(s string, n uint) string {
 // I wrote two implementations of WordSplit function to see if using a map
 // would help me look up words faster; but using a list was significantly faster
 
+// I compared WordSplitDict and WordSplitList with bigger inputs to see if using
+// a dictionary would be better for bigger inputs; however, although the performance
+// difference between the two decreased, using a list was still better, HERE IS WHY:
+// After isolating the look up part, I noticed that the reason behind the poor
+// performance of WordSplitDict is the first for loop I was using to create the dictionary.
+// Since I am giving bigger inputs for the second element of the string array, the cost of
+// looping and allocating map values gets higher and higher, and that's mainly why the WordSliptDict
+// function which loops through the same big input twice and allocates dictionary values is less
+// performant then the WordSplitList which loops just once
+
 func WordSplitDict(arr [2]string) string {
 	possibleMatch := arr[0]
 	words := make(map[string]int)
@@ -171,8 +181,35 @@ func WordSplitList(arr [2]string) string {
 	for i := 0; i < len(possibleMatch); i++ {
 		firstWord := possibleMatch[:i]
 		secondWord := possibleMatch[i:]
-		// for every combination of the two words, if any of the two
-		// combinations are both in the words, then returns the two words
+		if scontains(firstWord, words) && scontains(secondWord, words) {
+			return fmt.Sprintf("%s,%s", firstWord, secondWord)
+		}
+	}
+	return "not possible"
+}
+
+// I isolated the WordSplitDict and WordSplitList funcitons' look ups
+// As a result, while WhitList function was faster for very small inputs,
+// WithDict funciton was much faster overall, and especially as the
+// input got bigger.
+
+func WithDict(possibleMatch string, words map[string]int) string {
+	for i := 0; i < len(possibleMatch); i++ {
+		firstWord := possibleMatch[:i]
+		secondWord := possibleMatch[i:]
+		_, ok1 := words[firstWord]
+		_, ok2 := words[secondWord]
+		if ok1 && ok2 {
+			return fmt.Sprintf("%s,%s", firstWord, secondWord)
+		}
+	}
+	return "not possible"
+}
+
+func WithList(possibleMatch string, words []string) string {
+	for i := 0; i < len(possibleMatch); i++ {
+		firstWord := possibleMatch[:i]
+		secondWord := possibleMatch[i:]
 		if scontains(firstWord, words) && scontains(secondWord, words) {
 			return fmt.Sprintf("%s,%s", firstWord, secondWord)
 		}
