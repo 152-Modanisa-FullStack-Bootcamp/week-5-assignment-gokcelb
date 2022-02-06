@@ -120,6 +120,43 @@ func AlphabetSoupBubbleSort(s string) string {
 	return strings.Join(letters, "")
 }
 
+func AlphabetSoupMergeSort(s string) string {
+	letters := strings.Split(s, "")
+	return strings.Join(mergesort(letters), "")
+}
+
+func mergesort(letters []string) []string {
+	if len(letters) <= 1 {
+		return letters
+	}
+	mid := len(letters) / 2
+	left := mergesort(letters[:mid])
+	right := mergesort(letters[mid:])
+	return merge(left, right)
+}
+
+func merge(left, right []string) []string {
+	var letters []string
+	i := 0
+	j := 0
+	for i < len(left) && j < len(right) {
+		if left[i] <= right[j] {
+			letters = append(letters, left[i])
+			i++
+		} else {
+			letters = append(letters, right[j])
+			j++
+		}
+	}
+	for ; i < len(left); i++ {
+		letters = append(letters, left[i])
+	}
+	for ; j < len(right); j++ {
+		letters = append(letters, right[j])
+	}
+	return letters
+}
+
 func StringMask(s string, n uint) string {
 	var masked string
 	if len(s) == 0 {

@@ -131,6 +131,17 @@ func TestAlphabetSoupBubbleSort(t *testing.T) {
 	}
 }
 
+func TestAlphabetSoupMergeSort(t *testing.T) {
+	testCases := formAlphabetSoupTestCases()
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result := AlphabetSoupMergeSort(tC.givenWord)
+
+			assert.Equal(t, tC.expectedWord, result)
+		})
+	}
+}
+
 func TestStringMask(t *testing.T) {
 	testCases := []struct {
 		desc              string
